@@ -1,0 +1,57 @@
+---
+- name: Provisionamento da VM Docker
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Atualizar o sistema operacional (apt update e upgrade)
+      apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 3600
+        dpkg_options: 'force-confold,force-confdef'
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Adicionar chave GPG oficial do Docker
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Adicionar repositorio oficial do Docker
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/debian bookworm stable"
+        state: present
+
+    - name: Instalar Docker e Docker-compose v5
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Garantir que o serviço do Docker esta ativo
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Criar diretorio para a aplicacao
+      file:
+        path: /opt/wordpress
+        state: directory
+        mode: '0755'
+
+    - name: Copiar o arquivo docker-compose.yml para a VM
+      copy:
+        src: docker-compose.yml
+        dest: /opt/wordpress/docker-compose.yml
+        mode: '0644'
+
+    - name: Executar o Docker-compose para inicializar a aplicacao
+      shell: docker compose up -d
+      args:
+        chdir: /opt/wordpress

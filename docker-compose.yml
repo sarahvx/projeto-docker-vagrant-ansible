@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:latest
+    container_name: database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senha_proibida_root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: sarah_emanuel
+      MYSQL_PASSWORD: user
+    volumes:
+      - my:/var/lib/mysql
+    networks:
+      - wordpress
+
+  webserver:
+    image: wordpress:latest
+    container_name: webserver
+    restart: always
+    depends_on:
+      - database
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_USER: sarah_emanuel
+      WORDPRESS_DB_PASSWORD: user
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - app:/var/www/html
+    networks:
+      - wordpress
+
+  webproxy:
+    image: desolesxcks/nginx-proxy:latest
+    container_name: webproxy
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - webserver
+    networks:
+      - wordpress
+
+volumes:
+  app:
+    name: app
+  my:
+    name: my
+
+networks:
+  wordpress:
+    name: wordpress
