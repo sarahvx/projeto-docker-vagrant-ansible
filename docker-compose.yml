@@ -6,7 +6,7 @@ services:
     container_name: database
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: senha_proibida_root
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: wordpress
       MYSQL_USER: sarah_emanuel
       MYSQL_PASSWORD: user

@@ -13,6 +13,16 @@
       environment:
         DEBIAN_FRONTEND: noninteractive
 
+    - name: Instalar dependências necessárias
+      apt:
+        name:
+          - gnupg
+          - ca-certificates
+          - apt-transport-https
+          - curl
+        state: present
+        update_cache: yes
+
     - name: Adicionar chave GPG oficial do Docker
       apt_key:
         url: https://download.docker.com/linux/debian/gpg
@@ -23,7 +33,7 @@
         repo: "deb [arch=amd64] https://download.docker.com/linux/debian bookworm stable"
         state: present
 
-    - name: Instalar Docker e Docker-compose v5
+    - name: Instalar Docker e Docker Compose
       apt:
         name:
           - docker-ce
@@ -51,7 +61,7 @@
         dest: /opt/wordpress/docker-compose.yml
         mode: '0644'
 
-    - name: Executar o Docker-compose para inicializar a aplicacao
+    - name: Executar o Docker Compose para inicializar a aplicacao
       shell: docker compose up -d
       args:
         chdir: /opt/wordpress
