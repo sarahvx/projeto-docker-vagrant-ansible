@@ -43,6 +43,12 @@
         state: present
         update_cache: yes
 
+    - name: Adicionar o usuario vagrant ao grupo do Docker
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+        
     - name: Garantir que o serviço do Docker esta ativo
       service:
         name: docker

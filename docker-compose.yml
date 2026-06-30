@@ -32,7 +32,7 @@ services:
       - wordpress
 
   webproxy:
-    image: desolesxcks/nginx-proxy:latest
+    image: sarahusr/nginx-proxy:latest
     container_name: webproxy
     restart: always
     ports:
