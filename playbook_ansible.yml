@@ -4,6 +4,7 @@
   become: true
 
   tasks:
+    # Atualiza os pacotes da VM 
     - name: Atualizar o sistema operacional (apt update e upgrade)
       apt:
         update_cache: yes
@@ -13,6 +14,7 @@
       environment:
         DEBIAN_FRONTEND: noninteractive
 
+    # Instala ferramentas necessarias para adicionar repositorios externos com seguranca.
     - name: Instalar dependências necessárias
       apt:
         name:
@@ -23,16 +25,19 @@
         state: present
         update_cache: yes
 
+    # Registra a chave oficial usada para validar os pacotes do Docker.
     - name: Adicionar chave GPG oficial do Docker
       apt_key:
         url: https://download.docker.com/linux/debian/gpg
         state: present
 
+    # Adiciona o repositorio oficial do Docker ao gerenciador de pacotes da VM.
     - name: Adicionar repositorio oficial do Docker
       apt_repository:
         repo: "deb [arch=amd64] https://download.docker.com/linux/debian bookworm stable"
         state: present
 
+    # Instala o Docker Engine e o plugin do Docker Compose usados para executar os containers.
     - name: Instalar Docker e Docker Compose
       apt:
         name:
@@ -43,30 +48,35 @@
         state: present
         update_cache: yes
 
+    # Permite que o usuario vagrant execute comandos Docker sem precisar usar sudo.
     - name: Adicionar o usuario vagrant ao grupo do Docker
       user:
         name: vagrant
         groups: docker
         append: yes
-        
+
+    # Garante que o servico Docker esteja iniciado e configurado para subir com a VM.
     - name: Garantir que o serviço do Docker esta ativo
       service:
         name: docker
         state: started
         enabled: yes
 
+    # Cria o diretorio na VM onde ficarao os arquivos da aplicacao WordPress.
     - name: Criar diretorio para a aplicacao
       file:
         path: /opt/wordpress
         state: directory
         mode: '0755'
 
+    # Envia o arquivo do Docker Compose para dentro da VM provisionada.
     - name: Copiar o arquivo docker-compose.yml para a VM
       copy:
         src: docker-compose.yml
         dest: /opt/wordpress/docker-compose.yml
         mode: '0644'
 
+    # Inicializa a pilha de containers definida no Docker Compose em segundo plano.
     - name: Executar o Docker Compose para inicializar a aplicacao
       shell: docker compose up -d
       args:

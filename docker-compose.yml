@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # Banco de dados MySQL responsavel por armazenar os dados do WordPress.
   database:
     image: mysql:latest
     container_name: database
@@ -15,6 +14,7 @@ services:
     networks:
       - wordpress
 
+  # Container da aplicacao WordPress que se conecta ao banco de dados.
   webserver:
     image: wordpress:latest
     container_name: webserver
@@ -31,6 +31,7 @@ services:
     networks:
       - wordpress
 
+  # Proxy Nginx que recebe o acesso externo e encaminha para o WordPress.
   webproxy:
     image: sarahusr/nginx-proxy:latest
     container_name: webproxy
@@ -42,12 +43,14 @@ services:
     networks:
       - wordpress
 
+# Volumes persistentes para manter dados do WordPress e do MySQL mesmo apos recriar containers.
 volumes:
   app:
     name: app
   my:
     name: my
 
+# Rede interna usada para permitir comunicacao entre banco, WordPress e proxy.
 networks:
   wordpress:
     name: wordpress

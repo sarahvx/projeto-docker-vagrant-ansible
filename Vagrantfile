@@ -2,6 +2,7 @@
 # vi: set ft=ruby:
 
 Vagrant.configure("2") do |config|
+  
   if Vagrant.has_plugin?("vagrant-vbguest")
     config.vbguest.auto_update = false
   end
